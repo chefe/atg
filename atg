@@ -1,0 +1,32 @@
+#!/bin/sh
+PORT=${1:-33060} 
+
+# check if php is installed
+which php 2>&1 >/dev/null
+if [ $? -eq 1 ]; then 
+    echo "=> Please install php first"
+    exit 1
+fi
+
+# create atg folder if required
+mkdir -p /tmp/atg
+
+# check if adminer is already downloaded
+if [ ! -f /tmp/atg/index.php ]; then 
+    which wget 2>&1 >/dev/null
+    if [ $? -eq 1 ]; then 
+        echo "=> Please install wget first"
+        exit 1
+    fi
+
+    echo "=> Download adminer ..."
+    wget https://www.adminer.org/latest.php -q -O /tmp/atg/index.php
+else
+    echo "=> Adminer is already installed"
+fi
+
+# start webserver and open tool url
+echo "=> Start server and open browser"
+xdg-open "http://localhost:$PORT"
+php -S "localhost:$PORT" -t /tmp/atg/ >/dev/null
+
